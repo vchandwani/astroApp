@@ -22,8 +22,11 @@ export default function TabLayout() {
           ios: {
             // Use a transparent background on iOS to show the blur effect
             position: 'absolute',
+           },
+          default: {
+            backgroundColor: Colors[colorScheme ?? 'light'].background,
+            // display: 'none', // Hide the tab bar on Android
           },
-          default: {},
         }),
       }}>
       <Tabs.Screen
