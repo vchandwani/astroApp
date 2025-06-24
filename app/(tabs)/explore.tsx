@@ -93,7 +93,7 @@ export default function TabTwoScreen() {
         })}
       </Collapsible>
     </ParallaxScrollView>
-  );
+   );
 }
 
 const styles = StyleSheet.create({

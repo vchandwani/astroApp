@@ -1,20 +1,30 @@
 import { Tabs } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { Platform } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
 import TabBarBackground from '@/components/ui/TabBarBackground';
 import { Colors } from '@/constants/Colors';
-import { useColorScheme } from '@/hooks/useColorScheme';
+import { UserState } from '@/store/redux/user';
+import { useSelector } from 'react-redux';
+import { RootState } from '../../store/redux/store'; // Assuming your store.ts defines RootState
 
 export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  const [colorScheme, setColorScheme] = useState<'light' | 'dark'>('light');
+  
+  const { isDarkTheme } = useSelector<RootState, UserState >((state) => state.user);
+  
+  React.useEffect(() => {
+    // Log the color scheme whenever it changes
+    setColorScheme(isDarkTheme ? 'dark' : 'light');
+  },[isDarkTheme])
 
   return (
+
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
+        tabBarActiveTintColor: Colors[`${colorScheme}`].tint,
         headerShown: false,
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
@@ -24,7 +34,7 @@ export default function TabLayout() {
             position: 'absolute',
            },
           default: {
-            backgroundColor: Colors[colorScheme ?? 'light'].background,
+            backgroundColor: Colors[colorScheme].background,
             // display: 'none', // Hide the tab bar on Android
           },
         }),
