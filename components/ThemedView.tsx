@@ -1,6 +1,8 @@
-import { View, type ViewProps } from 'react-native';
+import { RootState } from "@/store/redux/store";
+import { UserState } from "@/store/redux/user";
+import { View, type ViewProps } from "react-native";
 
-import { useThemeColor } from '@/hooks/useThemeColor';
+import { useSelector } from "react-redux";
 
 export type ThemedViewProps = ViewProps & {
   lightColor?: string;
@@ -8,7 +10,7 @@ export type ThemedViewProps = ViewProps & {
 };
 
 export function ThemedView({ style, lightColor, darkColor, ...otherProps }: ThemedViewProps) {
-  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+  const { currentTheme } = useSelector<RootState, UserState>((state) => state.user);
 
-  return <View style={[{ backgroundColor }, style]} {...otherProps} />;
+  return <View style={[{ backgroundColor: currentTheme?.colors?.background }, style]} {...otherProps} />;
 }
