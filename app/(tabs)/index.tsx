@@ -10,17 +10,20 @@ import SunSignSymbol from "@/components/SunSignSymbol";
 import { CustomTheme, DarkTheme, LightTheme } from "@/constants/Colors";
 import {
   DAILY,
+  DAILY_PREDICTION_PROMPT,
   DATE_FORMAT_APICALL,
   DATE_FORMAT_DDMMYYY,
   DATE_OF_BIRTH,
   DATE_OF_BIRTH_PLACEHOLDER,
   GET_PREDICTION,
   MONTHLY,
+  MONTHLY_PREDICTION_PROMPT,
   NAME,
   PredictionType,
   TIME_OF_BIRTH,
   TIME_OF_BIRTH_PLACEHOLDER,
   YEARLY,
+  YEARLY_PREDICTION_PROMPT,
   YOUR_LUCKY_GEMSTONE,
   YOUR_NAME,
   YOUR_SUN_SIGN,
@@ -258,45 +261,20 @@ const MainAppContent: React.FC = () => {
       let predictionTypePrompt = `Please provide a ${predictionType} astrology prediction ${name ? "for " + name : ""}, who was born on ${formattedDate}  ${
         timeOfBirth ? "at " + timeOfBirth : ""
       }. Focus on general themes like career, relationships, and well-being. Keep it concise, around 3-4 paragraphs.`;
-      let predictionTypeOutput = ` 
-        **Today** - Include insight about career, learning and personal emotion.
-        **Best Suited Colour(s)** - Include insight about the colours for the day and its significance in a single paragraph.
-        **Best Suited Number(s)** - Include insight about the numbers for the day and its significance in a single paragraph.
-        **Summary** - Conclude with a positive affirmation or advice that encourages the user to embrace their unique astrological influences and treat astrology only as guide in a single paragraph.
-      `;
+      let predictionTypeOutput = DAILY_PREDICTION_PROMPT;
 
       switch (predictionType) {
         case "monthly":
           predictionTypePrompt = `Please provide a ${predictionType} astrology prediction ${name ? "for " + name : ""}, who was born on ${formattedDate} ${
             timeOfBirth ? "at " + timeOfBirth : ""
           }. Focus on general themes like career, relationships, and well-being..`;
-          predictionTypeOutput = ` 
-          **Aspect** - Begin with a brief introduction that explains the significance of astrology and how the user's birth details will influence their astrological reading.
-          **Sun Sign Characterstic** - Provide a summary of the user's sun sign, moon sign, and rising sign (ascendant), along with a brief explanation of each sign's characteristics with proper names and segregation.
-          **Best Suited Colour(s)** - Include a very brief insight about the colours best suited for the month and its significance in a single paragraph.
-          **Best Suited Number(s)** - Include a very brief insight about the numbers for the month and its significance in a single paragraph.
-          **Best Day(s)** - Include a very brief insight about the name of best days for the month and its significance in a single paragraph.
-          **Planets** - Offer insights into the positions of the planets at the time of birth, focusing on key aspects that may influence the user's life path, personality, and relationships with proper names and segregation.
-          **Astrological Influence** - Discuss any notable astrological events (e.g., retrogrades, eclipses) occurring around the user's date of birth and their potential impact in a single paragraph.
-          **Personalized Predictions** - Include detailed personalized predictions or guidance based on the user's astrological chart, touching upon areas such as career, love life, and personal growth in a single paragraph.
-          **Summary** - Conclude with a positive affirmation or advice that encourages the user to embrace their unique astrological influences and treat astrology only as guide in a single paragraph.
-        `;
+          predictionTypeOutput = MONTHLY_PREDICTION_PROMPT;
           break;
         case "yearly":
           predictionTypePrompt = `Please provide a ${predictionType} astrology prediction  ${name ? "for " + name : ""}, who was born on ${formattedDate} ${
             timeOfBirth ? "at " + timeOfBirth : ""
           }.  Focus on general themes like career, relationships, and well-being..`;
-          predictionTypeOutput = ` 
-          **Aspect** - Begin with a brief introduction that explains the significance of astrology and how the user's birth details will influence their astrological reading.
-          **Sun Sign Characterstic** - Provide a summary of the user's sun sign, moon sign, and rising sign (ascendant), along with a brief explanation of each sign's characteristics with proper names and segregation.
-          **Best Suited Colour(s)** - Include insight about the colours best suited for the year and its significance in a single paragraph.
-          **Best Suited Number(s)** - Include insight about the numbers for the year and its significance in a single paragraph.
-          **Best Months(s)** - Include insight about the best months for the year and its significance in a single paragraph.
-          **Planets** - Offer insights into the positions of the planets at the time of birth, focusing on key aspects that may influence the user's life path, personality, and relationships with proper names and segregation.
-          **Astrological Influence** - Discuss any notable astrological events (e.g., retrogrades, eclipses) occurring around the user's date of birth and their potential impact in a single paragraph.
-          **Personalized Predictions** - Include detailed personalized predictions or guidance based on the user's astrological chart, touching upon areas such as career, love life, and personal growth in a single paragraph.
-          **Summary** - Conclude with a positive affirmation or advice that encourages the user to embrace their unique astrological influences and treat astrology only as guide in a single paragraph.
-        `;
+          predictionTypeOutput = YEARLY_PREDICTION_PROMPT;
           break;
         default:
           break;
