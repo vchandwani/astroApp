@@ -1,4 +1,6 @@
+import List, { ItemData } from "@/components/List";
 import TextHighlighter from "@/components/TextHighlighter";
+import { CustomTheme } from "@/constants/Colors";
 import {
   AMETHYST,
   AQUAMARINE,
@@ -28,13 +30,13 @@ import {
 import { View } from "react-native";
 import { Text } from "react-native-paper";
 
-export const formatChildData = (header: string, data: string): string | React.ReactElement => {
+export const formatChildData = (header: string, data: string, currentTheme: CustomTheme): string | React.ReactElement => {
   if (header.toLowerCase().includes("number")) {
     // If the header includes 'number', format the data as a color string
     const allNumbers = new Set(data.match(/\d+(\.\d+)?/g));
     if (allNumbers) {
       return (
-        <View style={{ flexDirection: "column", flex: 1 }}>
+        <View style={{ flexDirection: "column", marginTop: 8, marginBottom: 8 }}>
           <Text
             style={{
               flexDirection: "row",
@@ -49,49 +51,35 @@ export const formatChildData = (header: string, data: string): string | React.Re
             {Array.from(allNumbers).join(", ")}
           </Text>
           <Text style={{ flexDirection: "row", width: "100%" }}>
-            <TextHighlighter>{data}</TextHighlighter>
+            <TextHighlighter currentTheme={currentTheme}>{data}</TextHighlighter>
           </Text>
         </View>
       );
     }
   } else if (header.toLowerCase().includes("planets") || header.toLowerCase().includes("sun sign characteristic")) {
     // If the header includes 'colour', format the data as a color string
-    const dataSplit = data?.split("*   **").map((item) => item.trim());
-    if (dataSplit?.length === 1) {
-      return dataSplit[0];
-    } else {
-      return (
-        <View>
-          {dataSplit &&
-            dataSplit?.map((item, index) => {
-              const individualData = item?.split("**").map((subItem) => subItem.trim());
 
-              return individualData[0] ? (
-                <View style={{ flexDirection: "column", flex: 1, marginBottom: 16 }} key={`${index}_planetInfo`}>
-                  <Text
-                    style={{
-                      flexDirection: "row",
-                      width: "100%",
-                      alignContent: "center",
-                      justifyContent: "center",
-                      textAlign: "center",
-                      fontWeight: "700",
-                      marginBottom: 8,
-                    }}
-                  >
-                    {individualData[0]}
-                  </Text>
-                  <Text style={{ flexDirection: "row", width: "100%" }}>
-                    <TextHighlighter>{individualData[1]}</TextHighlighter>
-                  </Text>
-                </View>
-              ) : null;
-            })}
-        </View>
-      );
+    const dataSplit = data?.split("*   **").map((item) => item.trim());
+
+    if (dataSplit?.length === 1) {
+      return <TextHighlighter currentTheme={currentTheme}>{dataSplit[0]}</TextHighlighter>;
+    } else {
+      let DATA: ItemData[] =
+        dataSplit?.map((item) => {
+          const individualData = item?.split("**").map((subItem) => subItem.trim());
+
+          return individualData[0] !== "" && individualData[1] !== ""
+            ? {
+                id: individualData[0],
+                title: individualData[1],
+              }
+            : { id: "", title: "" }; // Fallback for empty data
+        }) || [];
+
+      return <List data={DATA} currentTheme={currentTheme} />;
     }
   }
-  return <TextHighlighter>{data}</TextHighlighter>;
+  return <TextHighlighter currentTheme={currentTheme}>{data}</TextHighlighter>;
 };
 
 export const getDate = (dateString: string) => {

@@ -5,11 +5,29 @@ import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 import { Provider as ReduxProvider, useDispatch, useSelector } from "react-redux";
 
 import { Collapsible } from "@/components/Collapsible";
+import DateTimeComponent from "@/components/DatePicker";
 import SunSignSymbol from "@/components/SunSignSymbol";
 import { CustomTheme, DarkTheme, LightTheme } from "@/constants/Colors";
-import { PredictionType } from "@/constants/Values";
+import {
+  DAILY,
+  DATE_FORMAT_APICALL,
+  DATE_FORMAT_DDMMYYY,
+  DATE_OF_BIRTH,
+  DATE_OF_BIRTH_PLACEHOLDER,
+  GET_PREDICTION,
+  MONTHLY,
+  NAME,
+  PredictionType,
+  TIME_OF_BIRTH,
+  TIME_OF_BIRTH_PLACEHOLDER,
+  YEARLY,
+  YOUR_LUCKY_GEMSTONE,
+  YOUR_NAME,
+  YOUR_SUN_SIGN,
+} from "@/constants/Values";
 import { UserState, toggleCurrentTheme, toggleThemeVal } from "@/store/redux/user";
 import { formatChildData, getDate, getSunSign } from "@/utils/utils";
+import moment from "moment";
 import { RootState, store } from "../../store/redux/store"; // Assuming your store.ts defines RootState
 
 const styles = StyleSheet.create({
@@ -86,11 +104,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     flex: 1,
     textAlign: "center",
+    textTransform: "capitalize",
   },
   inactiveToggleText: {
     fontSize: 14,
     flex: 1,
     textAlign: "center",
+    textTransform: "capitalize",
   },
   predictButton: {
     marginTop: 20,
@@ -199,7 +219,7 @@ const MainAppContent: React.FC = () => {
 
     // Date and time format validation (simple regex, can be more robust)
     const dateRegex = /^\d{2}-\d{2}-\d{4}$/;
-    const timeRegex = /^\d{2}:\d{2}$/;
+    const timeRegex = /^\d{1}:\d{2} [AaPp][Mm]$/;
 
     if (!dateRegex.test(dateOfBirth)) {
       setErrorMessage("Please enter Date of Birth in dd-mm-yyyy format.");
@@ -227,8 +247,12 @@ const MainAppContent: React.FC = () => {
 
     try {
       let chatHistory: { role: string; parts: { text: string }[] }[] = [];
+
       const { day, month, year } = getDate(dateOfBirth);
-      const formattedDate = new Date(`${month}-${day}-${year}`).toDateString();
+      const dateStringDDMMYYYY = `${day}-${month}-${year})}`;
+
+      const momentDate = moment(dateStringDDMMYYYY, DATE_FORMAT_DDMMYYY);
+      const formattedDate = momentDate.format(DATE_FORMAT_APICALL);
 
       // Construct the prompt for the LLM based on prediction type
       let predictionTypePrompt = `Please provide a ${predictionType} astrology prediction ${name ? "for " + name : ""}, who was born on ${formattedDate}  ${
@@ -261,7 +285,7 @@ const MainAppContent: React.FC = () => {
         case "yearly":
           predictionTypePrompt = `Please provide a ${predictionType} astrology prediction  ${name ? "for " + name : ""}, who was born on ${formattedDate} ${
             timeOfBirth ? "at " + timeOfBirth : ""
-          }. Focus on general themes like career, relationships, and well-being..`;
+          }.  Focus on general themes like career, relationships, and well-being..`;
           predictionTypeOutput = ` 
           **Aspect** - Begin with a brief introduction that explains the significance of astrology and how the user's birth details will influence their astrological reading.
           **Sun Sign Characterstic** - Provide a summary of the user's sun sign, moon sign, and rising sign (ascendant), along with a brief explanation of each sign's characteristics with proper names and segregation.
@@ -350,7 +374,7 @@ const MainAppContent: React.FC = () => {
             <Card style={[styles.card, { backgroundColor: currentTheme.colors.surface }]}>
               <Card.Content>
                 <TextInput
-                  label="Your Name"
+                  label={YOUR_NAME}
                   value={name}
                   onChangeText={setName}
                   mode="outlined"
@@ -360,36 +384,30 @@ const MainAppContent: React.FC = () => {
                   textColor={currentTheme.colors.text}
                   placeholderTextColor={currentTheme.colors.placeholder}
                   left={<TextInput.Icon icon="account" color={currentTheme.colors.text} />}
+                  placeholder={NAME}
                 />
-                <TextInput
-                  label="Date of Birth (dd-mm-yyyy)"
-                  value={dateOfBirth}
-                  onChangeText={setDateOfBirth}
-                  mode="outlined"
-                  style={[styles.input, { backgroundColor: currentTheme.colors.surface }]}
-                  keyboardType="numeric"
-                  placeholder="e.g., 15-01-1990"
-                  outlineColor={currentTheme.colors.placeholder}
-                  activeOutlineColor={currentTheme.colors.primary}
-                  textColor={currentTheme.colors.text}
-                  placeholderTextColor={currentTheme.colors.placeholder}
-                  left={<TextInput.Icon icon="calendar" color={currentTheme.colors.text} />}
+                <DateTimeComponent
+                  label={DATE_OF_BIRTH}
+                  placeholder={DATE_OF_BIRTH_PLACEHOLDER}
+                  icon="calendar"
+                  currentTheme={currentTheme}
+                  styles={styles}
+                  onChange={setDateOfBirth}
+                  isDarkTheme={isDarkThemeVal}
+                  mode={"date"}
                 />
-                <TextInput
-                  label="Time of Birth (HH:MM - 24hr)"
-                  value={timeOfBirth}
-                  onChangeText={setTimeOfBirth}
-                  mode="outlined"
-                  style={[styles.input, { backgroundColor: currentTheme.colors.surface }]}
-                  keyboardType="numeric"
-                  placeholder="e.g., 14:30"
-                  outlineColor={currentTheme.colors.placeholder}
-                  activeOutlineColor={currentTheme.colors.primary}
-                  textColor={currentTheme.colors.text}
-                  placeholderTextColor={currentTheme.colors.placeholder}
-                  left={<TextInput.Icon icon="clock" color={currentTheme.colors.text} />}
+                <DateTimeComponent
+                  label={TIME_OF_BIRTH}
+                  placeholder={TIME_OF_BIRTH_PLACEHOLDER}
+                  icon={"clock"}
+                  currentTheme={currentTheme}
+                  styles={styles}
+                  onChange={setTimeOfBirth}
+                  isDarkTheme={isDarkThemeVal}
+                  mode={"time"}
+                  dateFormat={"h:mm a"}
+                  is24Hour={false}
                 />
-
                 <Text style={[styles.toggleTitle, { color: currentTheme.colors.text }]}>Prediction Type</Text>
                 <ToggleButton.Row
                   onValueChange={(value: string) => value && setPredictionType(value as PredictionType)}
@@ -404,27 +422,27 @@ const MainAppContent: React.FC = () => {
                 >
                   <ToggleButton
                     icon="calendar-today"
-                    value="daily"
+                    value={DAILY}
                     style={styles.toggleButton}
-                    iconColor={predictionType === "daily" ? currentTheme.colors.text : currentTheme.colors.placeholder}
+                    iconColor={predictionType === DAILY ? currentTheme.colors.text : currentTheme.colors.placeholder}
                   />
                   <ToggleButton
                     icon="calendar-month"
-                    value="monthly"
+                    value={MONTHLY}
                     style={styles.toggleButton}
-                    iconColor={predictionType === "monthly" ? currentTheme.colors.text : currentTheme.colors.placeholder}
+                    iconColor={predictionType === MONTHLY ? currentTheme.colors.text : currentTheme.colors.placeholder}
                   />
                   <ToggleButton
                     icon="calendar-range"
-                    value="yearly"
+                    value={YEARLY}
                     style={styles.toggleButton}
-                    iconColor={predictionType === "yearly" ? currentTheme.colors.text : currentTheme.colors.placeholder}
+                    iconColor={predictionType === YEARLY ? currentTheme.colors.text : currentTheme.colors.placeholder}
                   />
                 </ToggleButton.Row>
                 <View style={styles.toggleTextContainer}>
                   <Text
                     style={
-                      predictionType === "daily"
+                      predictionType === DAILY
                         ? {
                             ...styles.activeToggleText,
                             color: currentTheme.colors.text,
@@ -435,11 +453,11 @@ const MainAppContent: React.FC = () => {
                           }
                     }
                   >
-                    Daily
+                    {DAILY}
                   </Text>
                   <Text
                     style={
-                      predictionType === "monthly"
+                      predictionType === MONTHLY
                         ? {
                             ...styles.activeToggleText,
                             color: currentTheme.colors.text,
@@ -450,11 +468,11 @@ const MainAppContent: React.FC = () => {
                           }
                     }
                   >
-                    Monthly
+                    {MONTHLY}
                   </Text>
                   <Text
                     style={
-                      predictionType === "yearly"
+                      predictionType === YEARLY
                         ? {
                             ...styles.activeToggleText,
                             color: currentTheme.colors.text,
@@ -465,10 +483,9 @@ const MainAppContent: React.FC = () => {
                           }
                     }
                   >
-                    Yearly
+                    {YEARLY}
                   </Text>
                 </View>
-
                 <Button
                   mode="contained"
                   onPress={fetchPrediction}
@@ -479,7 +496,7 @@ const MainAppContent: React.FC = () => {
                   contentStyle={styles.predictButtonContent}
                   labelStyle={[styles.predictButtonLabel, { color: currentTheme.colors.secondary }]}
                 >
-                  Get Prediction
+                  {GET_PREDICTION}
                 </Button>
               </Card.Content>
             </Card>
@@ -509,7 +526,7 @@ const MainAppContent: React.FC = () => {
                       marginRight: 10,
                     }}
                   >
-                    Your Sun Sign is:{" "}
+                    {YOUR_SUN_SIGN}{" "}
                     <Text
                       variant="bodyLarge"
                       style={{
@@ -548,17 +565,19 @@ const MainAppContent: React.FC = () => {
                       marginBottom: 5,
                       color: currentTheme.colors.text,
                       textAlign: "center",
+                      width: "100%",
                     }}
                   >
-                    Your lucky Gemstone
+                    {YOUR_LUCKY_GEMSTONE}
                   </Text>
                   <Text
-                    variant="bodyMedium"
+                    variant="bodyLarge"
                     style={{
                       fontWeight: "bold",
                       marginBottom: 5,
                       color: currentTheme.colors.text,
                       textAlign: "center",
+                      width: "100%",
                       fontStyle: "italic",
                     }}
                   >
@@ -594,15 +613,14 @@ const MainAppContent: React.FC = () => {
             >
               {headerInfo}
             </Text>
-            {predictions?.[predictionType] &&
+            {predictions?.[predictionType]?.length > 0 &&
               predictions?.[predictionType]?.map((txt: string, index: number) => {
                 const splitData = txt.split("**\n\n");
                 if (index > 0) {
                   return (
-                    <Collapsible title={splitData[0]} key={`${index}header`} isOpenVal={true}>
-                      <Text
+                    <Collapsible title={splitData[0]} key={`${splitData[0]}_header`} isOpenVal={true}>
+                      <View
                         style={{
-                          color: currentTheme?.colors?.text,
                           borderColor: `${currentTheme?.colors?.placeholder}`,
                           borderWidth: 2,
                           borderRadius: 10,
@@ -613,8 +631,8 @@ const MainAppContent: React.FC = () => {
                           padding: 16,
                         }}
                       >
-                        {formatChildData(splitData[0], splitData[1])}
-                      </Text>
+                        {formatChildData(splitData[0], splitData[1], currentTheme)}
+                      </View>
                     </Collapsible>
                   );
                 } else return null;

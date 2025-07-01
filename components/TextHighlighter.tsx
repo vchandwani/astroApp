@@ -1,7 +1,8 @@
+import { CustomTheme } from "@/constants/Colors";
 import React, { PropsWithChildren } from "react";
 import { StyleSheet, Text } from "react-native";
 
-const TextHighlighter = ({ children, highlightStyle = {} }: PropsWithChildren & { highlightStyle?: object }) => {
+const TextHighlighter = ({ children, highlightStyle = {}, currentTheme }: PropsWithChildren & { highlightStyle?: object; currentTheme?: CustomTheme }) => {
   if (typeof children !== "string") {
     return <Text>{children}</Text>; // Handle non-string children gracefully
   }
@@ -9,7 +10,7 @@ const TextHighlighter = ({ children, highlightStyle = {} }: PropsWithChildren & 
   const parts = children.split("**");
 
   return (
-    <Text>
+    <Text style={{ color: currentTheme?.colors?.text }}>
       {parts.map((part, index: number) => {
         // If the index is odd, it's a part that was between two '**'
         if (index % 2 === 1) {

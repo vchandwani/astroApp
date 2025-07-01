@@ -25,5 +25,20 @@ export const AMETHYST ='Amethyst'
 export const AQUAMARINE ='Aquamarine'
 
 export const PLANETS ='Planets'
+export const DAILY= 'daily'
+export const MONTHLY= 'monthly'
+export const YEARLY = 'yearly'
 
-export type PredictionType = "daily" | "monthly" | "yearly";
+export type PredictionType = typeof DAILY | typeof MONTHLY | typeof YEARLY;
+export const DATE_FORMAT_DDMMYYY = 'DD-MM-YYYY';
+export const DATE_FORMAT_APICALL = 'MMM Do YYYY';
+
+export const YOUR_NAME='Your Name'
+export const NAME='Name'
+export const DATE_OF_BIRTH ='Date of Birth'
+export const DATE_OF_BIRTH_PLACEHOLDER ='e.g., 15-01-1990'
+export const TIME_OF_BIRTH ='Time of Birth'
+export const TIME_OF_BIRTH_PLACEHOLDER ='e.g., 14:30'
+export const GET_PREDICTION ='Get Prediction'
+export const YOUR_SUN_SIGN ='Your Sun Sign is:'
+export const YOUR_LUCKY_GEMSTONE ='Your lucky Gemstone'
