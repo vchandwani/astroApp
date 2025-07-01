@@ -7,7 +7,7 @@ export interface UserState {
 }
 
 const initialState: UserState = {
-    isDarkTheme: false,
+    isDarkTheme: true,
     currentTheme: DarkTheme,
 };
 
